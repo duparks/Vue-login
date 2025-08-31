@@ -1,7 +1,9 @@
-# Vue 로그인 앱
+# 로그인 앱
 
 Cursor AI의 추천 UI로 제작된 회원가입 및 로그인 시스템입니다.
 Vue 3와 Tailwind CSS를 활용하여 반응형 디자인과 다크모드를 지원합니다.
+
+🌐 **Login App**: [https://parkscamp.net:4710](https://parkscamp.net:4710)
 
 ## 주요 기능
 
