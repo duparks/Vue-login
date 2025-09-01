@@ -2,7 +2,7 @@
 
 Cursor AI의 추천 UI로 제작된 회원가입 및 로그인 시스템입니다.
 프론트 개발은 Vue 3와 Tailwind CSS를 활용하여 반응형 디자인과 다크모드를 지원하고,
-백엔드 개발은 Python Fastapi 기반으로 JWT 토큰 인증과 OAuth2 로그인을 처리합니다.
+백엔드 개발은 Python FastAPI 기반으로 OAuth2 로그인과 JWT 토큰 인증을 처리합니다.
 
 🌐 **Login Web App**: [https://parkscamp.net:4710](https://parkscamp.net:4710)
 
@@ -273,12 +273,19 @@ stopTokenMonitoring()
 
 ## 주요 기능
 
-- JWT 토큰 기반 인증 (Access Token + Refresh Token)
 - 사용자 등록 및 로그인/로그아웃
+- 구글 OAuth2 소셜 로그인 지원
+- JWT 토큰 기반 인증 (Access Token + Refresh Token)
 - 토큰/블랙리스트 DB 관리(`token` 테이블)
 - 토큰 로테이션(리프레시 재발급 시 기존 토큰 회수)
+- 임시 비밀번호 생성 및 이메일 전송
 - 자동 API 문서 생성 (Swagger UI)
-- 구글 OAuth2 소셜 로그인 지원
+
+## 기술 스택
+
+- **Python**: Python 3.12.3 on linux
+- **FastAPI**: FastAPI v0.116.1
+- **MySQL**: Database version 10.11.0
 
 ## 프로젝트 구조
 
