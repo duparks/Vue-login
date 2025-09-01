@@ -3,7 +3,7 @@
 Cursor AI의 추천 UI로 제작된 회원가입 및 로그인 시스템입니다.
 Vue 3와 Tailwind CSS를 활용하여 반응형 디자인과 다크모드를 지원합니다.
 
-🌐 **Login App**: [https://parkscamp.net:4710](https://parkscamp.net:4710)
+🌐 **Login Web App**: [https://parkscamp.net:4710](https://parkscamp.net:4710)
 
 ## 주요 기능
 
@@ -77,20 +77,29 @@ src/
 ## API 엔드포인트
 
 ### 인증 관련
-- `POST /auth/login`: 사용자 로그인
 - `POST /auth/register`: 사용자 회원가입
+- `POST /auth/login`: 사용자 로그인
 - `POST /auth/logout`: 사용자 로그아웃
 - `POST /auth/refresh`: 액세스 토큰 갱신
-- `GET /auth/profile`: 로그인된 사용자 정보 조회
+- `GET /auth/me`: 사용자 토큰 조회
 
 ### OAuth 관련
 - `GET /oauth/:provider/callback`: 소셜 로그인 콜백 처리
+- `POST /auth/:provider/logout`: 소셜 로그아웃 처리
+
+### 사용자 관련
+- `GET /auth/profile`: 사용자 정보 조회
+- `PUT /auth/profile`: 사용자 정보 변경
+- `DELETE /auth/profile`: 사용자 정보 삭제
+- `PUT /auth/profile/alter`: 사용자 비밀번호 변경
+- `POST /auth/profile/findid`: 사용자 ID 찾기
+- `POST /auth/profile/findpw`: 사용자 PASSWORD 찾기
 
 ## Pinia 상태 관리
 
 이 프로젝트는 Pinia를 사용하여 전역 상태를 관리합니다.
 
-### 인증 스토어 (auth.js)
+### 인증 스토어 (AuthStore.js)
 
 ```javascript
 import { useAuthStore } from '../stores/AuthStore'
@@ -106,32 +115,37 @@ export default {
 #### 주요 상태
 - `isLoggedIn`: 로그인 상태
 - `accessToken`: 액세스 토큰
-- `user`: 사용자 정보
+- `oauthToken`: Oauth 토큰
+- `userData`: 사용자 정보
 - `isLoading`: 로딩 상태
 
 #### 주요 액션
 - `initializeAuth()`: 앱 시작 시 인증 상태 초기화
 - `loginSuccess(token, userData)`: 로그인 성공 시 상태 업데이트
-- `logout()`: 로그아웃 처리
+- `appLogout()`: 로그아웃 처리
 - `clearAuth()`: 인증 정보 정리
 - `fetchUserInfo()`: `/auth/profile` 엔드포인트에서 사용자 정보 가져오기
 - `refreshToken()`: 토큰 갱신
-- `handleTokenExpiration()`: 토큰 만료 감지 및 처리
+- `checkTokenExpiration()`: 토큰 만료 감지 및 처리
 - `validateToken()`: 토큰 유효성 검사
 - `startTokenMonitoring()`: 토큰 모니터링 시작
 - `stopTokenMonitoring()`: 토큰 모니터링 중지
+- `showNotification()`: 브라우저 알림 표시
+- `showToastNotification()`: 안전한 토스트 (XSS 방지)
+- `vibrateDevice()`: 진동 알림
+- `playNotificationSound()`: 사운드 알림
 
 ### 사용 예시
 
 ```javascript
 // 로그인 성공 시
-this.authStore.loginSuccess(data.accessToken, data.user)
+this.authStore.loginSuccess(data.accessToken, data.userData)
 
 // 로그아웃 시
-await this.authStore.logout()
+await this.authStore.appLogout()
 
 // 로그인 상태 확인
-if (this.authStore.isAuthenticated) {
+if (this.authStore.isUserLoggedIn) {
   // 로그인된 상태
 }
 ```
@@ -141,17 +155,17 @@ if (this.authStore.isAuthenticated) {
 ### Google OAuth
 1. Google Cloud Console에서 프로젝트 생성
 2. OAuth 2.0 클라이언트 ID 발급
-3. `src/config/oauth.js`의 `clientId` 업데이트
+3. `src/utils/OauthConfig.js`의 `clientId` 업데이트
 
 ### Kakao OAuth
 1. Kakao Developers에서 애플리케이션 생성
 2. REST API 키 발급
-3. `src/config/oauth.js`의 `clientId` 업데이트
+3. `src/utils/OauthConfig.js`의 `clientId` 업데이트
 
 ### Naver OAuth
 1. Naver Developers에서 애플리케이션 생성
 2. 클라이언트 ID 발급
-3. `src/config/oauth.js`의 `clientId` 업데이트
+3. `src/utils/OauthConfig.js`의 `clientId` 업데이트
 
 ## 환경 변수
 
@@ -171,7 +185,7 @@ VITE_NAVER_CLIENT_ID=your_naver_client_id
 
 ```bash
 # 토큰 만료 시간 설정 (밀리초)
-VITE_TOKEN_EXPIRY_WARNING=300000  # 5분 전 경고
+VITE_TOKEN_EXPIRY_WARNING=180000   # 3분 전 경고
 VITE_TOKEN_CHECK_FREQUENCY=60000   # 1분마다 체크
 
 # 브라우저 알림 설정
@@ -186,8 +200,8 @@ MIT License
 
 - **`/`**: 홈 페이지 - 앱 소개 및 기능 설명
 - **`/login`**: 로그인 페이지 - 로그인 폼 및 소셜 로그인
-- **`/user`**: 회원가입 페이지 - 사용자 등록 폼
-- **`/auth/:provider/callback`**: 소셜 로그인 처리 페이지 - OAuth 콜백 처리 및 결과 표시
+- **`/signup`**: 회원가입 페이지 - 사용자 등록 폼
+- **`/oauth/:provider/callback`**: 소셜 로그인 처리 페이지 - OAuth 콜백 처리 및 결과 표시
   - `:provider`는 동적 경로 파라미터 (google, kakao, naver)
 
 ## 소셜 로그인 플로우
@@ -195,9 +209,9 @@ MIT License
 ### SPA 기반 구조
 1. **로그인 페이지**에서 소셜 로그인 버튼 클릭
 2. **현재 페이지**에서 해당 플랫폼의 OAuth 인증 페이지로 이동
-3. **사용자 인증 완료** 후 `/auth/{provider}/callback?code={code}` 로 리다이렉트
+3. **사용자 인증 완료** 후 `/oauth/{provider}/callback?code={code}` 로 리다이렉트
 4. **SocialLoginView**에서 인증 코드를 서버로 전송
-5. **성공 시**: 5초 카운트다운 후 자동으로 홈 화면으로 이동
+5. **성공 시**: 3초 카운트다운 후 자동으로 홈 화면으로 이동
 6. **실패 시**: 로그인 화면으로 이동 또는 재시도 옵션
 
 ### 장점
@@ -206,19 +220,19 @@ MIT License
 - **모바일 친화적**: 모바일에서도 안정적인 동작
 - **자동 이동**: 성공 시 자동으로 홈 화면으로 이동
 - **코드 통합**: 모든 소셜 로그인을 하나의 컴포넌트에서 처리
-- **RESTful URL**: 깔끔하고 직관적인 URL 구조 (`/auth/google/callback` vs `/social-login?provider=google`)
+- **RESTful URL**: 깔끔하고 직관적인 URL 구조 (`/oauth/google/callback` vs `/socialLogin?provider=google`)
 
 ## 토큰 만료 및 자동 갱신 시스템
 
-### HTTP 인터셉터 (`src/config/http.js`)
+### HTTP 인터셉터 (`src/utils/HttpClient.js`)
 - 모든 API 요청에 대해 401 에러 자동 감지
 - 토큰 만료 시 자동으로 토큰 갱신 시도
 - 갱신 성공 시 원래 요청 자동 재시도
 - 갱신 실패 시 자동 로그아웃 및 로그인 페이지 리다이렉트
 
-### 토큰 모니터링 (`src/utils/tokenMonitor.js`)
+### 토큰 모니터링 (`src/utils/TokenMonitor.js`)
 - 주기적인 토큰 유효성 검사 (1분마다)
-- 만료 5분 전 사용자 경고 알림
+- 만료 3분 전 사용자 경고 알림
 - 브라우저 알림 지원 (권한 허용 시)
 - 자동 토큰 갱신 및 로그아웃 처리
 
@@ -233,14 +247,14 @@ MIT License
 
 ```javascript
 // HTTP 클라이언트 사용
-import { api } from '../config/http'
+import { api } from '../utils/HttpClient'
 
 // 자동으로 401 에러 처리 및 토큰 갱신
-const response = await api.get('/api/protected-data')
+const response = await fetch('/api/protected-data')
 const data = await response.json()
 
 // 토큰 모니터링 수동 제어
-import { startTokenMonitoring, stopTokenMonitoring } from '../utils/tokenMonitor'
+import { startTokenMonitoring, stopTokenMonitoring } from '../utils/TokenMonitor'
 
 // 모니터링 시작
 startTokenMonitoring()
