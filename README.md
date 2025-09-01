@@ -1,14 +1,17 @@
 # 로그인 앱
 
 Cursor AI의 추천 UI로 제작된 회원가입 및 로그인 시스템입니다.
-Vue 3와 Tailwind CSS를 활용하여 반응형 디자인과 다크모드를 지원합니다.
+프론트 개발은 Vue 3와 Tailwind CSS를 활용하여 반응형 디자인과 다크모드를 지원하고,
+백엔드 개발은 Python Fastapi 기반으로 JWT 토큰 인증과 OAuth2 로그인을 처리합니다.
 
 🌐 **Login Web App**: [https://parkscamp.net:4710](https://parkscamp.net:4710)
+
+# [프론트엔드]
 
 ## 주요 기능
 
 - **로그인/회원가입**: 이메일과 비밀번호를 통한 기본 인증
-- **소셜 로그인**: Google, Kakao, Naver OAuth 지원
+- **소셜 로그인**: Google, Kakao, Naver OAuth2 지원
 - **반응형 디자인**: 모든 디바이스에서 최적화된 사용자 경험
 - **다크모드**: 사용자 선호도에 따른 테마 선택
 - **Vue 3 + Composition API**: 최신 Vue.js 기능 활용
@@ -262,3 +265,122 @@ startTokenMonitoring()
 // 모니터링 중지
 stopTokenMonitoring()
 ```
+
+
+
+# [백엔드]
+
+## 주요 기능
+
+- JWT 토큰 기반 인증 (Access Token + Refresh Token)
+- 사용자 등록 및 로그인/로그아웃
+- 토큰/블랙리스트 DB 관리(`token` 테이블)
+- 토큰 로테이션(리프레시 재발급 시 기존 토큰 회수)
+- 자동 API 문서 생성 (Swagger UI)
+- 구글 OAuth2 소셜 로그인 지원
+
+## 프로젝트 구조
+
+```
+Fastcamp/
+├── auth/
+│   ├── auth_bearer.py
+│   ├── jwt_handler.py
+│   └── oauth_handler.py
+├── config/
+│   └── settings.py
+├── database/
+│   └── connection.py
+├── models/
+│   ├── token.py
+│   └── user.py
+├── routers/
+│   └── auth.py
+├── schemas/
+│   └── auth.py
+├── utils/
+│   ├── email_sender.py
+│   └── password_generator.py
+├── main.py
+└── requirements.txt
+```
+
+## 설치 및 실행
+
+### 1. 가상환경 생성 및 활성화
+
+```bash
+# 가상환경 생성
+python -m venv pyenv
+
+# 가상환경 활성화 (linux)
+pyenv\Scripts\activate
+
+# 가상환경 활성화 (Linux)
+source pyenv/bin/activate
+```
+
+### 2. 패키지 설치
+
+```bash
+pip install -r requirements.txt
+```
+
+### 3. 환경 변수 설정(.env)
+
+`.env` 파일을 생성하고 다음 내용을 추가하세요:
+
+```env
+# Google OAuth2
+GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+GOOGLE_REDIRECT_URI=google-redirect-uri
+
+# Naver OAuth2
+NAVER_CLIENT_ID=your-naver-client-id
+NAVER_CLIENT_SECRET=your-naver-client-secret
+NAVER_REDIRECT_URI=naver-redirect-uri
+
+# Kakao OAuth2
+KAKAO_CLIENT_ID=your-kakao-client-id
+KAKAO_CLIENT_SECRET=your-kakao-client-secret
+KAKAO_REDIRECT_URI=kakao-redirect-uri
+
+# JWT
+SECRET_KEY=your-super-secret-key-here-change-in-production
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=min
+REFRESH_TOKEN_EXPIRE_DAYS=days
+
+# MySQL
+MYSQL_HOST=yourhost
+MYSQL_PORT=yourport
+MYSQL_USER=youruser
+MYSQL_PASSWORD=yourpassword
+MYSQL_DATABASE=yourdatabase
+
+# 포트
+PORT=port
+```
+
+
+
+# [시스템]
+
+## 하드웨어
+
+- ZOTAC ZBOX-RI531NANO
+
+## OS
+
+- Ubuntu 24.04.2 LTS
+
+## 주요 서비스
+
+- **Certbot**: SSL 인증 관리
+- **Cron**: 백그라운드 프로세싱
+- **Fastcamp**: 로그인 앱 백엔드 서버
+- **Mariadb**: MySQL 데이터베이스 서버
+- **Nginx**: 웹서버 및 리버스 프록시
+- **Ssh**: Secure Shell 서버
+- **Vsftpd**: SFTP 서버
