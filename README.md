@@ -327,11 +327,9 @@ source pyenv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 3. 환경 변수 설정(.env)
+### 3. 환경 변수 설정
 
-`.env` 파일을 생성하고 다음 내용을 추가하세요:
-
-```env
+```
 # Google OAuth2
 GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
 GOOGLE_CLIENT_SECRET=your-google-client-secret
@@ -349,7 +347,7 @@ KAKAO_REDIRECT_URI=kakao-redirect-uri
 
 # JWT
 SECRET_KEY=your-super-secret-key-here-change-in-production
-ALGORITHM=HS256
+ALGORITHM=alg
 ACCESS_TOKEN_EXPIRE_MINUTES=min
 REFRESH_TOKEN_EXPIRE_DAYS=days
 
@@ -384,5 +382,5 @@ PORT=port
 - **Fastcamp**: 로그인 앱 백엔드 서버
 - **Mariadb**: MySQL 데이터베이스 서버
 - **Nginx**: 웹서버 및 리버스 프록시
-- **Ssh**: Secure Shell 서버
+- **SSH**: Secure Shell 서버
 - **Vsftpd**: SFTP 서버
